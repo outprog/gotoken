@@ -82,10 +82,8 @@ func (e *ERC20) ReadContract(contractAddress common.Address, funcName string, ar
 	return output, nil
 }
 
-// SendErc20TokenTransaction 转账交易或者是approve 交易
-func (e *ERC20) SendErc20TokenTransaction(isApprove bool, private string, nonce, gasLimit uint64, gasPrice *big.Int, receiver, tokenAddress common.Address, tokenAmount *big.Int) (*types.Transaction, error) {
-	rawTx := newErc20TokenRawTx(isApprove, nonce, receiver, tokenAddress, gasLimit, gasPrice, tokenAmount)
-
+// SignAndSendTransaction 转账交易或者是approve 交易
+func (e *ERC20) SignAndSendTransaction(private string, rawTx *types.Transaction) (*types.Transaction, error) {
 	// 对原生交易进行签名
 	prv, err := crypto.ToECDSA(common.FromHex(private))
 	if err != nil {

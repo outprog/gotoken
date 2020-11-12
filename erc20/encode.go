@@ -46,15 +46,15 @@ func formatArgs(args string) []byte {
 	return h[:]
 }
 
-// newErc20TokenRawTx 构造erc20 token 转账交易的 raw transaction
-func newErc20TokenRawTx(isApprove bool, senderNonce uint64, receiver common.Address, contractAddr common.Address, gasLimit uint64, gasPrice *big.Int, tokenAmount *big.Int) *types.Transaction {
+// NewErc20TokenTransferOrApproveRawTx 构造erc20 token tansfer 或者 approve 的 raw transaction
+func NewErc20TokenTransferOrApproveRawTx(approveTx bool, senderNonce uint64, receiver common.Address, contractAddr common.Address, gasLimit uint64, gasPrice *big.Int, tokenAmount *big.Int) *types.Transaction {
 	/**
 	transferFun := "0xa9059cbb"
 	receiverAddrCode := 000000000000000000000000b1e15fdbe88b7e7c47552e2d33cd5a9b2e0fd478 // eg: 代币接收地址code
 	tokenAmountCode := "0000000000000000000000000000000000000000000000000000000000000064" // eg: 转币数量100
 	*/
 	funcName := "transfer(address,uint256)"
-	if isApprove {
+	if approveTx {
 		funcName = "approve(address,uint256)"
 	}
 	funcCode := getContractFunctionCode(funcName)
@@ -67,6 +67,22 @@ func newErc20TokenRawTx(isApprove bool, senderNonce uint64, receiver common.Addr
 
 	// 组装以太坊交易
 	return types.NewTransaction(senderNonce, contractAddr, big.NewInt(0), gasLimit, gasPrice, inputData)
+}
+
+// NewErc20TokenTransferFromRawTx 在approve 之后使用， tokenOwner为授权token 出去的地址，这笔交易的签名者为授权token 的使用者，tokenReceiver 为这笔转账的token 接收者；
+func NewErc20TokenTransferFromRawTx(senderNonce uint64, tokenOwner, tokenReceiver, tokenAddr common.Address, tokenAmount *big.Int, gasLimit uint64, gasPrice *big.Int) *types.Transaction {
+	funcName := "transferFrom(address,address,uint256)" // transferFrom(address _from, address _to, uint256 _value)
+
+	funcCode := getContractFunctionCode(funcName)
+	tokenOwnerCode := formatArgs(tokenOwner.Hex())
+	tokenReceiverCode := formatArgs(tokenReceiver.Hex())
+	tokenAmountCode := formatArgs(tokenAmount.Text(16))
+
+	// input
+	inputData := make([]byte, 0)
+	inputData = append(append(append(funcCode, tokenOwnerCode...), tokenReceiverCode...), tokenAmountCode...) // 顺序一致
+
+	return types.NewTransaction(senderNonce, tokenAddr, big.NewInt(0), gasLimit, gasPrice, inputData)
 }
 
 // signRawTx 对交易进行签名
