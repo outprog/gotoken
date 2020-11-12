@@ -1,5 +1,6 @@
 # Read and perform contract (power of golang)
 
+`go get -u github.com/outprog/gotoken`
 ### 已完成
 1. 读取合约中的所有constant功能
 2. 执行合约方法：transfer(), approve(),transferFrom()
