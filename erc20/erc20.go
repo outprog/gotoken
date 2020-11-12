@@ -82,7 +82,7 @@ func (e *ERC20) ReadContract(contractAddress common.Address, funcName string, ar
 	return output, nil
 }
 
-// SignAndSendTransaction 转账交易或者是approve 交易
+// SignAndSendTransaction 签名并上链交易
 func (e *ERC20) SignAndSendTransaction(private string, rawTx *types.Transaction) (*types.Transaction, error) {
 	// 对原生交易进行签名
 	prv, err := crypto.ToECDSA(common.FromHex(private))

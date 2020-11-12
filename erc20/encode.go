@@ -69,7 +69,8 @@ func NewErc20TokenTransferOrApproveRawTx(approveTx bool, senderNonce uint64, rec
 	return types.NewTransaction(senderNonce, contractAddr, big.NewInt(0), gasLimit, gasPrice, inputData)
 }
 
-// NewErc20TokenTransferFromRawTx 在approve 之后使用， tokenOwner为授权token 出去的地址，这笔交易的签名者为授权token 的使用者，tokenReceiver 为这笔转账的token 接收者；
+// NewErc20TokenTransferFromRawTx
+// 在approve 之后使用， tokenOwner为授权token 出去的地址，这笔交易的签名者为授权token 的使用者，tokenReceiver 为这笔转账的token 接收者；
 func NewErc20TokenTransferFromRawTx(senderNonce uint64, tokenOwner, tokenReceiver, tokenAddr common.Address, tokenAmount *big.Int, gasLimit uint64, gasPrice *big.Int) *types.Transaction {
 	funcName := "transferFrom(address,address,uint256)" // transferFrom(address _from, address _to, uint256 _value)
 
